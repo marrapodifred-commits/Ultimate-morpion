@@ -151,7 +151,7 @@
   .dot.o{ background:var(--o); }
   .small{ color:var(--muted); font-size:12px }
 
-  #chronoDisplay {
+  #chronoDisplay, #timerDisplay {
     font-size:20px;
     font-weight:600;
     padding:8px 16px;
@@ -161,6 +161,65 @@
     min-width:80px;
     text-align:center;
     color:var(--muted);
+  }
+
+  #timerDisplay.warning {
+    color: #f59e0b;
+    animation: timerPulse 1s ease-in-out infinite;
+  }
+  #timerDisplay.critical {
+    color: #ef4444;
+    animation: timerPulse 0.5s ease-in-out infinite;
+  }
+  @keyframes timerPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .player-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--active);
+    border: 2px solid var(--grid-strong);
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  .player-indicator .side-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .player-indicator .side-badge.x {
+    background: var(--x);
+    color: white;
+  }
+
+  .player-indicator .side-badge.o {
+    background: var(--o);
+    color: white;
+  }
+
+  .player-indicator .turn-text {
+    font-size: 14px;
+  }
+
+  .player-indicator .turn-text.your-turn {
+    color: var(--win);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .player-indicator .turn-text.waiting {
+    color: var(--muted);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
   }
 
   .board{
@@ -271,6 +330,188 @@
     stroke:var(--o); 
   }
 
+  .end-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .end-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .end-backdrop {
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .end-overlay.victory .end-backdrop {
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15), rgba(34, 197, 94, 0.05));
+    animation: victoryPulse 2s ease-in-out infinite;
+  }
+
+  .end-overlay.defeat .end-backdrop {
+    background: radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.12), rgba(239, 68, 68, 0.04));
+    animation: defeatShake 0.5s ease-in-out;
+  }
+
+  .end-overlay.draw .end-backdrop {
+    background: radial-gradient(circle at 50% 50%, rgba(107, 114, 128, 0.12), rgba(156, 163, 175, 0.04));
+  }
+
+  @keyframes victoryPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.02); opacity: 1; }
+  }
+
+  @keyframes defeatShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  .end-card {
+    position: relative;
+    background: var(--bg);
+    border-radius: 24px;
+    padding: 48px 36px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transform: scale(0.8);
+    animation: cardAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes cardAppear {
+    to {
+      transform: scale(1);
+    }
+  }
+
+  .end-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: iconBounce 0.6s ease-out 0.3s;
+  }
+
+  @keyframes iconBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .end-title {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 12px 0;
+    color: var(--fg);
+  }
+
+  .end-message {
+    font-size: 16px;
+    color: var(--muted);
+    margin: 0 0 24px 0;
+  }
+
+  .end-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: 800;
+  }
+
+  .stat-value.x {
+    color: var(--x);
+  }
+
+  .stat-value.o {
+    color: var(--o);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .end-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .end-btn {
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .end-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .end-btn.primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+  }
+
+  .end-btn.secondary {
+    background: var(--bg);
+    color: var(--fg);
+    border: 2px solid var(--grid-strong);
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #10b981;
+    opacity: 0;
+  }
+
+  .victory .confetti {
+    animation: confettiFall 3s ease-out forwards;
+  }
+
+  @keyframes confettiFall {
+    0% {
+      transform: translateY(-100vh) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
   .hide{ display:none !important; }
   .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .grow{ flex:1; min-width:200px; }
@@ -296,6 +537,19 @@
       --size: min(95vmin, 95vw);
       --mini-gap: 6px;
     }
+
+    .end-card {
+      padding: 32px 24px;
+      width: 95%;
+    }
+
+    .end-icon {
+      font-size: 60px;
+    }
+
+    .end-title {
+      font-size: 24px;
+    }
   }
 </style>
 </head>
@@ -310,6 +564,9 @@
       <select id="modeSel">
         <option value="local">Local 2 joueurs</option>
         <option value="ai">VS IA</option>
+        <option value="online">En ligne</option>
+        <option value="blitz-local">Blitz local</option>
+        <option value="blitz-online">Blitz en ligne</option>
       </select>
     </label>
 
@@ -325,6 +582,19 @@
       </label>
     </span>
 
+    <span id="netWrap" class="row hide">
+      <label>Serveur WS :
+        <input id="wsUrl" type="text" value="wss://ultimate-ttt-ws.onrender.com">
+      </label>
+    </span>
+
+    <span id="roomWrap" class="row hide">
+      <label>Salle :
+        <input id="room" type="text" placeholder="ex: amis2025">
+      </label>
+      <button id="joinBtn" class="accent" type="button">🔗 Rejoindre</button>
+    </span>
+
     <button id="resetBtn" type="button">🔄</button>
     <button id="undoBtn" type="button">↩️</button>
   </div>
@@ -336,14 +606,42 @@
     <span id="activeMiniText" class="small">Mini imposé : libre</span>
   </div>
   <div class="row">
-    <span id="chronoDisplay">0:00</span>
+    <span id="chronoDisplay" class="hide">0:00</span>
+    <span id="timerDisplay" class="hide">30s</span>
+    <div id="playerIndicator" class="player-indicator hide">
+      <span class="side-badge x" id="playerSide">X</span>
+      <span class="turn-text your-turn" id="turnText">À vous de jouer !</span>
+    </div>
   </div>
 </div>
 
 <div id="board" class="board"></div>
 
+<div id="endOverlay" class="end-overlay">
+  <div class="end-backdrop"></div>
+  <div class="end-card">
+    <div class="end-icon" id="endIcon">🏆</div>
+    <h2 class="end-title" id="endTitle">Victoire !</h2>
+    <p class="end-message" id="endMessage">Félicitations !</p>
+    <div class="end-stats">
+      <div class="stat-item">
+        <span class="stat-value x" id="statX">0</span>
+        <span class="stat-label">Minis X</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value o" id="statO">0</span>
+        <span class="stat-label">Minis O</span>
+      </div>
+    </div>
+    <div class="end-actions">
+      <button class="end-btn primary" id="endReplay" type="button">🔄 Rejouer</button>
+      <button class="end-btn secondary" id="endClose" type="button">✖️ Fermer</button>
+    </div>
+  </div>
+</div>
+
 <script>
-console.log('🎮 Démarrage du jeu...');
+console.log('🎮 Démarrage Ultimate Morpion...');
 
 const LINES = [
   [0,1,2],[3,4,5],[6,7,8],
@@ -360,6 +658,9 @@ const state = {
   history: [],
   mode: 'local',
   aiLevel: 3,
+  net: { ws:null, url:'', room:'', side:null, connected:false },
+  timer: null,
+  timeLeft: 30,
   chrono: null,
   chronoTime: 0,
   theme: 'light'
@@ -371,12 +672,27 @@ const activeMiniTextEl = document.getElementById('activeMiniText');
 const modeSel = document.getElementById('modeSel');
 const aiLevelSel = document.getElementById('aiLevelSel');
 const aiWrap = document.getElementById('aiWrap');
+const netWrap = document.getElementById('netWrap');
+const roomWrap = document.getElementById('roomWrap');
+const wsUrlInput = document.getElementById('wsUrl');
+const roomInput = document.getElementById('room');
+const joinBtn = document.getElementById('joinBtn');
 const resetBtn = document.getElementById('resetBtn');
 const undoBtn = document.getElementById('undoBtn');
 const themeToggle = document.getElementById('themeToggle');
 const chronoDisplay = document.getElementById('chronoDisplay');
-
-console.log('📋 Éléments chargés');
+const timerDisplay = document.getElementById('timerDisplay');
+const playerIndicator = document.getElementById('playerIndicator');
+const playerSide = document.getElementById('playerSide');
+const turnText = document.getElementById('turnText');
+const endOverlay = document.getElementById('endOverlay');
+const endIcon = document.getElementById('endIcon');
+const endTitle = document.getElementById('endTitle');
+const endMessage = document.getElementById('endMessage');
+const statX = document.getElementById('statX');
+const statO = document.getElementById('statO');
+const endReplay = document.getElementById('endReplay');
+const endClose = document.getElementById('endClose');
 
 function loadTheme() {
   const saved = localStorage.getItem('theme') || 'light';
@@ -391,6 +707,45 @@ themeToggle.addEventListener('click', () => {
   localStorage.setItem('theme', state.theme);
   themeToggle.textContent = state.theme === 'dark' ? '☀️' : '🌓';
 });
+
+function startTimer() {
+  stopTimer();
+  state.timeLeft = 30;
+  updateTimerDisplay();
+  state.timer = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) {
+      stopTimer();
+      handleTimeout();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (state.timer) {
+    clearInterval(state.timer);
+    state.timer = null;
+  }
+}
+
+function updateTimerDisplay() {
+  timerDisplay.textContent = state.timeLeft + 's';
+  timerDisplay.classList.remove('warning', 'critical');
+  if (state.timeLeft <= 5) timerDisplay.classList.add('critical');
+  else if (state.timeLeft <= 10) timerDisplay.classList.add('warning');
+}
+
+function handleTimeout() {
+  state.current = state.current === 'X' ? 'O' : 'X';
+  if (state.mode === 'blitz-online' && state.net.connected) {
+    sendNet({ t: 'timeout', room: state.net.room });
+  }
+  render();
+  if ((state.mode === 'blitz-local' || state.mode === 'blitz-online') && !state.globalWin) {
+    startTimer();
+  }
+}
 
 function startChrono() {
   if (state.chrono) return;
@@ -413,6 +768,30 @@ function updateChronoDisplay() {
   const minutes = Math.floor(state.chronoTime / 60);
   const seconds = state.chronoTime % 60;
   chronoDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function updatePlayerIndicator() {
+  if (state.mode === 'online' || state.mode === 'blitz-online') {
+    if (state.net.side === 'X' || state.net.side === 'O') {
+      playerIndicator.classList.remove('hide');
+      playerSide.textContent = state.net.side;
+      playerSide.className = `side-badge ${state.net.side.toLowerCase()}`;
+      if (state.current === state.net.side && !state.globalWin) {
+        turnText.textContent = '🎯 À vous de jouer !';
+        turnText.className = 'turn-text your-turn';
+      } else if (state.globalWin) {
+        turnText.textContent = 'Partie terminée';
+        turnText.className = 'turn-text waiting';
+      } else {
+        turnText.textContent = '⏳ En attente...';
+        turnText.className = 'turn-text waiting';
+      }
+    } else {
+      playerIndicator.classList.add('hide');
+    }
+  } else {
+    playerIndicator.classList.add('hide');
+  }
 }
 
 function cellMark(player){
@@ -518,6 +897,8 @@ function render(){
   } else {
     activeMiniTextEl.textContent = `Mini imposé : ${state.forcedMini+1}`;
   }
+
+  updatePlayerIndicator();
 }
 
 function isMiniPlayable(m){
@@ -555,7 +936,8 @@ function updateMiniAndGlobal(m){
   
   if (state.globalWin) {
     stopChrono();
-    alert(state.globalWin === 'D' ? 'Match nul !' : `${state.globalWin} a gagné !`);
+    stopTimer();
+    setTimeout(() => showEndAnimation(), 500);
   }
 }
 
@@ -584,11 +966,17 @@ function applyMove(m,c,fromPlayer=null){
   }
 
   state.current = state.current==='X' ? 'O' : 'X';
+
+  if ((state.mode === 'blitz-local' || state.mode === 'blitz-online') && !state.globalWin) {
+    startTimer();
+  }
+
   return true;
 }
 
 function resetGame(){
   stopChrono();
+  stopTimer();
   state.board = Array.from({length:9},()=>Array(9).fill(null));
   state.miniStatus = Array(9).fill(null);
   state.current = 'X';
@@ -596,11 +984,16 @@ function resetGame(){
   state.globalWin = null;
   state.history = [];
   fullRender();
-  startChrono();
+  
+  if (state.mode === 'blitz-local' || state.mode === 'blitz-online') {
+    startTimer();
+  } else if (state.mode === 'local' || state.mode === 'online') {
+    startChrono();
+  }
 }
 
 function undo(){
-  if (state.mode==='ai') return;
+  if (state.mode==='online' || state.mode==='blitz-local' || state.mode==='blitz-online') return;
   if (state.history.length===0) return;
   const last = state.history.pop();
   state.board[last.m][last.c] = null;
@@ -717,9 +1110,12 @@ function onCellClick(e){
   const m = +e.currentTarget.dataset.m;
   const c = +e.currentTarget.dataset.c;
 
-  console.log(`Clic sur mini ${m}, case ${c}`);
-
+  if (!isLocalTurnForThisClient()) return;
   if (!applyMove(m,c)) return;
+
+  if ((state.mode==='online' || state.mode==='blitz-online') && state.net.connected){
+    sendNet({ t:'move', room: state.net.room, data:{ m, c } });
+  }
 
   render();
   
@@ -734,16 +1130,198 @@ function onCellClick(e){
   }
 }
 
+function isLocalTurnForThisClient(){
+  if (state.globalWin) return false;
+  if (state.mode==='online' || state.mode==='blitz-online'){
+    if (state.net.side==='X' || state.net.side==='O'){
+      return state.current===state.net.side;
+    }
+    return true;
+  }
+  return true;
+}
+
+function connectWS(url){
+  try{ 
+    if (state.net.ws) state.net.ws.close(); 
+  }catch(e){}
+  
+  const ws = new WebSocket(url);
+  state.net.ws = ws;
+  
+  ws.onopen = ()=>{
+    console.log('✅ WebSocket connecté');
+    state.net.connected = true;
+    state.net.url = url;
+    sendNet({ t:'join', room: state.net.room });
+    updateUI();
+    
+    if (state.mode === 'blitz-online') {
+      startTimer();
+    } else if (state.mode === 'online') {
+      startChrono();
+    }
+  };
+  
+  ws.onmessage = (evt)=>{
+    try{
+      const msg = JSON.parse(evt.data);
+      handleNetMsg(msg);
+    }catch(e){}
+  };
+  
+  ws.onerror = (err)=>{ 
+    console.error('❌ Erreur WebSocket');
+    state.net.connected=false; 
+    updateUI(); 
+  };
+  
+  ws.onclose = ()=>{ 
+    console.log('🔌 WebSocket fermé');
+    state.net.connected=false; 
+    state.net.side=null;
+    stopTimer();
+    stopChrono();
+    updateUI(); 
+  };
+}
+
+function sendNet(obj){
+  if (!state.net.ws || state.net.ws.readyState!==WebSocket.OPEN) return;
+  state.net.ws.send(JSON.stringify(obj));
+}
+
+function handleNetMsg(msg){
+  if (msg.t==='joined'){
+    state.net.side = msg.side;
+    updateUI();
+    updatePlayerIndicator();
+  } else if (msg.t==='state'){
+    state.board = msg.data.board;
+    state.miniStatus = msg.data.miniStatus;
+    state.current = msg.data.current;
+    state.forcedMini = msg.data.forcedMini;
+    state.globalWin = msg.data.globalWin;
+    state.history = [];
+    render();
+  } else if (msg.t==='move'){
+    const {m,c} = msg.data;
+    applyMove(m,c);
+    render();
+  } else if (msg.t==='reset'){
+    resetGame();
+  } else if (msg.t==='timeout'){
+    handleTimeout();
+  }
+}
+
 function updateUI(){
   aiWrap.classList.toggle('hide', state.mode!=='ai');
+  netWrap.classList.toggle('hide', state.mode!=='online' && state.mode!=='blitz-online');
+  roomWrap.classList.toggle('hide', state.mode!=='online' && state.mode!=='blitz-online');
+  undoBtn.disabled = state.mode==='online' || state.mode==='blitz-local' || state.mode==='blitz-online';
+  
+  timerDisplay.classList.toggle('hide', state.mode!=='blitz-local' && state.mode!=='blitz-online');
+  chronoDisplay.classList.toggle('hide', state.mode!=='local' && state.mode!=='online');
+  
+  updatePlayerIndicator();
+  
+  if (state.mode === 'online' || state.mode === 'blitz-online') {
+    if (state.net.connected) {
+      joinBtn.innerHTML = '✅ Connecté';
+      joinBtn.disabled = true;
+    } else {
+      joinBtn.innerHTML = '🔗 Rejoindre';
+      joinBtn.disabled = false;
+    }
+  }
+  
   render();
 }
 
-resetBtn.addEventListener('click', resetGame);
+function showEndAnimation() {
+  if (!state.globalWin) return;
+
+  let x = 0, o = 0;
+  for (const s of state.miniStatus) {
+    if (s === 'X') x++;
+    if (s === 'O') o++;
+  }
+  
+  statX.textContent = x;
+  statO.textContent = o;
+
+  endOverlay.classList.remove('victory', 'defeat', 'draw');
+
+  if (state.globalWin === 'X') {
+    endOverlay.classList.add('victory');
+    endIcon.textContent = '🏆';
+    endTitle.textContent = 'Victoire !';
+    endMessage.textContent = 'X a gagné la partie !';
+    createConfetti();
+  } else if (state.globalWin === 'O') {
+    endOverlay.classList.add('defeat');
+    endIcon.textContent = '😔';
+    endTitle.textContent = 'Défaite';
+    endMessage.textContent = 'O a gagné la partie !';
+  } else {
+    endOverlay.classList.add('draw');
+    endIcon.textContent = '🤝';
+    endTitle.textContent = 'Match nul';
+    endMessage.textContent = 'Partie serrée !';
+  }
+
+  setTimeout(() => {
+    endOverlay.classList.add('show');
+  }, 100);
+}
+
+function createConfetti() {
+  const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = Math.random() * 0.3 + 's';
+      confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      endOverlay.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 3500);
+    }, i * 30);
+  }
+}
+
+function hideEndAnimation() {
+  endOverlay.classList.remove('show');
+  setTimeout(() => {
+    endOverlay.classList.remove('victory', 'defeat', 'draw');
+    endOverlay.querySelectorAll('.confetti').forEach(c => c.remove());
+  }, 400);
+}
+
+resetBtn.addEventListener('click', ()=>{
+  hideEndAnimation();
+  resetGame();
+  if ((state.mode==='online' || state.mode==='blitz-online') && state.net.connected){
+    sendNet({ t:'reset', room: state.net.room });
+  }
+});
+
 undoBtn.addEventListener('click', undo);
 
 modeSel.addEventListener('change', ()=>{
+  const oldMode = state.mode;
   state.mode = modeSel.value;
+  
+  if (oldMode === 'blitz-local' || oldMode === 'blitz-online') stopTimer();
+  if (oldMode === 'local' || oldMode === 'online') stopChrono();
+  if ((oldMode === 'online' || oldMode === 'blitz-online') && state.net.connected) {
+    state.net.ws.close();
+    state.net.connected = false;
+    state.net.side = null;
+  }
+  
   updateUI();
   resetGame();
 });
@@ -752,9 +1330,36 @@ aiLevelSel.addEventListener('change', ()=>{
   state.aiLevel = +aiLevelSel.value; 
 });
 
+joinBtn.addEventListener('click', (e)=>{
+  e.preventDefault();
+  const url = wsUrlInput.value.trim();
+  const room = roomInput.value.trim();
+  if (!url || !room) {
+    alert('⚠️ Veuillez remplir le serveur et la salle');
+    return;
+  }
+  state.net.room = room;
+  connectWS(url);
+});
+
+endReplay.addEventListener('click', () => {
+  hideEndAnimation();
+  resetGame();
+  if ((state.mode==='online' || state.mode==='blitz-online') && state.net.connected){
+    sendNet({ t:'reset', room: state.net.room });
+  }
+});
+
+endClose.addEventListener('click', () => {
+  hideEndAnimation();
+});
+
 window.addEventListener('keydown', (e)=>{
   if (e.key==='r' || e.key==='R') resetBtn.click();
   if (e.key==='u' || e.key==='U') undo();
+  if (e.key === 'Escape' && endOverlay.classList.contains('show')) {
+    hideEndAnimation();
+  }
 });
 
 console.log('⏳ Initialisation...');
@@ -763,7 +1368,11 @@ fullRender();
 modeSel.value = state.mode;
 aiLevelSel.value = String(state.aiLevel);
 updateUI();
-startChrono();
+
+if (state.mode === 'local') {
+  startChrono();
+}
+
 console.log('✅ Jeu prêt !');
 </script>
 
